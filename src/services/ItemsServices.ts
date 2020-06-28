@@ -13,6 +13,6 @@ export default class ItemsServices{
                 image_url : `http://localhost:3333/uploads/${image}`
             }
         });
-        response.json(serializedItems);   
+        response.json(serializedItems);//
     }
 }
