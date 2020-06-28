@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import knex from '../database/connection';
 
 export default class UsersServices {
-    /*Users list*/
+    /*Users listll*/
     users = [
         'Mateus',
         'Henrique',

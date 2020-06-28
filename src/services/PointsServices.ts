@@ -5,7 +5,7 @@ import Utils from '../utils/Utils';
 
 const utils = new Utils();
 
-export default class PointsServices{
+export default class PointsServices{//
     async create({ request, response } : {request : Request, response : Response}) {
         const { 
             name,
@@ -28,7 +28,7 @@ export default class PointsServices{
             latitude,
             longitude,
             city : utils.textFormatDefault(city),
-            uf : utils.textFormatDefault(uf),
+            uf : utils.textFormatDefault(uf),//
         }
 
         const insertedIds = await trx('points').insert(newPoint);
