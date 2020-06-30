@@ -14,13 +14,17 @@ export default class UsersServices {
         'textel'
     ];
     
-    index ({ request, response }: { request: Request; response: Response; }) {
-        const { search } = request.query;
+    async index ({ request, response }: { request: Request; response: Response; }) {
+        const retrieveUsers = await knex('users')
+                                        .select('*');
+        return response.json(retrieveUsers);
+        
+        /*const { search } = request.query;
         response.json( search === undefined ? 
             this.users : 
             this.users.filter(user => {
                 return user.toUpperCase().includes(search.toString().toUpperCase());
-        }));
+        }));*/
     }
     show ({request, response} : { request : Request; response : Response}){
         const { id } = request.params;
