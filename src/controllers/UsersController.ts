@@ -11,7 +11,10 @@ export default class UsersController{
     show (request : Request, response : Response){
         usersServices.show({ request, response });
     }
-    create (request : Request, response : Response){
-        usersServices.create({request, response});
+    store (request : Request, response : Response){
+        usersServices.store({request, response});
+    }
+    destroy (request : Request, response : Response){
+        usersServices.destroy({request, response});
     }
 }

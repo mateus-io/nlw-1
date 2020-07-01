@@ -5,6 +5,8 @@ import Utils from '../utils/Utils';
 
 const utils = new Utils();
 
+
+
 export default class PointsServices{//
     async create({ request, response } : {request : Request, response : Response}) {
         const { 

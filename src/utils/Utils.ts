@@ -1,5 +1,6 @@
 import { Request } from 'express';
 
+import bcrypt from 'bcryptjs';
 
 type Product = {
     id : number;
@@ -42,7 +43,14 @@ export default class Utils{
     }
     decryptToken (authorization : string) {
         //decypting...
-        return authorization;//
+        return authorization;
+    }
+
+    passwordEncrypt (password : string) : string {
+        return bcrypt.hashSync(password, 8);
+    }
+    isValidPassword (password : string, encryptedPassword : string) : Promise<boolean> {
+        return bcrypt.compare(password, encryptedPassword);
     }
 
 } 
