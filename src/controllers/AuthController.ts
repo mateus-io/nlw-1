@@ -8,4 +8,7 @@ export default class AuthController{
     authenticate (request : Request, response : Response){
         authServices.authenticate({request, response});
     }
+    socialAuthenticate (request : Request, response : Response){
+        authServices.socialAuthenticate({request, response});
+    }
 }
