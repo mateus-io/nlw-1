@@ -21,7 +21,7 @@ export default class UsersServices {
     async index ({ request, response }: { request: Request; response: Response; }) {
         const retrieveUsers = await knex('users')
                                         .select('*');
-        return response.json(retrieveUsers);
+        return response.json({retrieveUsers, if : request.userId});
         
         /*const { search } = request.query;
         response.json( search === undefined ? 
@@ -36,9 +36,14 @@ export default class UsersServices {
             response.json({user : this.users[Number(id)]}) :
             response.status(404).send('Not Found');        
     }
+    
     async store ({ request, response } : { request : Request, response : Response }){
-        const { email, password, userName } = request.body;
-        const profile_picture = 'http://localhost:3333/uploads/avatarDefault.svg';
+        const { email, password, userName, profile_picture_url } = request.body;
+        const profile_picture =
+                        !profile_picture_url || profile_picture_url === "" ?
+                            'http://localhost:3333/uploads/avatarDefault.svg' : 
+                            profile_picture_url;
+
         const userExists = await knex('users')
                                     .where('email', email)
                                     .first();
@@ -51,7 +56,6 @@ export default class UsersServices {
                 profile_picture
             }
             let insertedIds = await knex('users').insert(user);
-            console.log(insertedIds);
             return response.json(user);
         }
         return response.status(409).send();
