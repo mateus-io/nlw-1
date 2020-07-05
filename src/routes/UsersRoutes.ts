@@ -12,6 +12,8 @@ routes.get('', authMiddleware, usersController.index);
 
 routes.get('/:id', usersController.show);
 
+
+
 routes.post('', usersController.store);
 
 routes.delete('/:user_id', usersController.destroy);

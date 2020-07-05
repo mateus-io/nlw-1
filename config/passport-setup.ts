@@ -4,7 +4,7 @@ import passport from 'passport';
 import GoogleStrategy from 'passport-google-oauth20';
 import FacebookStrategy from 'passport-facebook';
 
-import './getEnv';
+//import './getEnv';
 
 type User = {
     id:  number;
@@ -14,20 +14,16 @@ type User = {
     profile_picture: string; 
 };
 
-passport.serializeUser( (user : User, done) => {
-    done(null, user.id);
+passport.serializeUser( (user, done) => {
+    done(null, user);
 });
 
-passport.deserializeUser( async (id : number, done) => {
-    const user = await knex('users')
-                        .where('id', id)
-                        .first();
-    
+passport.deserializeUser((user, done) => {
     done(null, user);
 });
 passport.use(
     new GoogleStrategy.Strategy({
-        callbackURL: "/auth/google/redirect",
+        callbackURL: "https://e-commerce-tests.herokuapp.com/auth/google/redirect",
         clientID: String(process.env.GOOGLE_CLIENT_ID),
         clientSecret: String(process.env.GOOGLE_CLIENT_SECRET),
     }, async (accessToken, refreshToken, profile, done : any) => {
@@ -44,13 +40,16 @@ passport.use(
                 email: profile._json.sub,
                 profile_picture: profile._json.picture, 
             }
-            const ids = await knex('users').insert(newUser);
-            const id = Number(ids[0]);
-            
-            done(null, { ...newUser, id });
+            await knex('users').insert(newUser);
+            const user_included = await knex('users')
+                                        .where('email', profile._json.sub)
+                                        .first();
+            console.log(JSON.stringify(user_included) );
+            done(null, user_included);
         }
         else {
             //already have the user
+            console.log(JSON.stringify(user) );
             done(null, user);
         }
     })
@@ -59,7 +58,7 @@ passport.use(
 
 passport.use(
     new FacebookStrategy.Strategy({
-        callbackURL: "/auth/facebook/redirect",
+        callbackURL: "https://e-commerce-tests.herokuapp.com/auth/facebook/redirect",
         clientID: String(process.env.FACEBOOK_APP_ID),
         clientSecret: String(process.env.FACEBOOK_APP_SECRET),
         profileFields: ['id', 'displayName', 'name', 'emails']

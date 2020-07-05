@@ -8,7 +8,7 @@ const utils = new Utils();
 
 import jwt from 'jsonwebtoken';
 
-import '../../config/getEnv';
+//import '../../config/getEnv';
 
 type User = {
     id : number;
@@ -20,7 +20,7 @@ type User = {
 
 export default class AuthServices{
     async authenticate({request, response} : {request : Request, response : Response}){
-        const { email, password } = request.body;
+        const { email, password, authenticate_social_mobile } = request.body;
         
         const user = await knex('users')
                                 .where('email', email)
@@ -28,12 +28,15 @@ export default class AuthServices{
         if(!user) {
             return response.status(401).send();
         }
-        const isValid = await utils.isValidPassword(password, user.password);
-        if(!isValid){
-            return response.status(401).send();
+        if( String(authenticate_social_mobile).toUpperCase() === "FALSE"){
+            const isValid = await utils.isValidPassword(password, user.password);
+            if(!isValid){
+                return response.status(401).send();
+            }
         }
+
         const token = jwt.sign( { id : user.id }, String(process.env.APP_SECRET_KEY), { expiresIn : '30d' } );
-        
+            
         delete user.password;
 
         return response.json({
@@ -44,8 +47,9 @@ export default class AuthServices{
 
     socialAuthenticate ({request, response} : {request : Request, response : Response}) {
         const user  = request.user as User;
-        const token = jwt.sign( { id : user.id }, String(process.env.APP_SECRET_KEY), { expiresIn : '30d' } );
         
+        const token = jwt.sign( { id : user.id }, String(process.env.APP_SECRET_KEY), { expiresIn : '30d' } );
+
         delete user.password;
 
         return response.json({
