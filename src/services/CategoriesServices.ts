@@ -9,6 +9,20 @@ export default class CategoriesServices{
         const retrieveCategories = await knex('categories').select('*');
         response.json(retrieveCategories);
     }
+    async destroy({request, response} : { request : Request, response : Response }){
+        const { id } = request.query;
+        if(!id){
+            return response.status(404).send();
+        }
+        try {
+            await knex('categories').where('id', '>', Number(id)).del();
+            await knex('categories_products').where('id', '>', Number(id)).del();
+            return response.status(200).send();
+        } catch {
+            return response.status(404).send();
+        }
+    }
+    
     async update({request, response} : {request : Request, response : Response}){
         const { id } = request.params;
         const { title, category_image_url, image_offers_url } = request.body;
@@ -39,5 +53,19 @@ export default class CategoriesServices{
                 .where('id', id)
                 .first();
         response.json(retrieveCategorie);
+    }
+    async retrieveCategorie({request, response} : {request : Request, response : Response}){
+        const { product_id } = request.params;
+
+        try{
+            const categorieRetrieved = await knex('categories')
+                        .join('categories_products', 'categories.id', '=', 'categories_products.categorie_id')
+                        .where('categories_products.product_id', product_id)
+                        .first()
+                        .select('categories.*');
+            return response.json({categorie : categorieRetrieved});
+        } catch {
+            return response.status(404).send();
+        }
     }
 }
