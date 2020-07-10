@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 
 import knex from '../database/connection';
 
-import utils from '../utils/Utils';
+import Utils from '../utils/Utils';
+const utils = new Utils();
 
 export default class CategoriesServices{
     async index({request, response} : { request : Request, response : Response }) {
@@ -54,18 +55,17 @@ export default class CategoriesServices{
                 .first();
         response.json(retrieveCategorie);
     }
-    async retrieveCategorie({request, response} : {request : Request, response : Response}){
-        const { product_id } = request.params;
+    async categoriesByProductId ({request, response} : {request : Request, response : Response}){
+        const { products } = request.query;
+            
+            const products_ids = utils.stringToNumberArray(String(products));
 
-        try{
+            
             const categorieRetrieved = await knex('categories')
                         .join('categories_products', 'categories.id', '=', 'categories_products.categorie_id')
-                        .where('categories_products.product_id', product_id)
-                        .first()
+                        .whereIn('categories_products.product_id', products_ids)
+                        .distinct()
                         .select('categories.*');
-            return response.json({categorie : categorieRetrieved});
-        } catch {
-            return response.status(404).send();
-        }
+            return response.json(categorieRetrieved);
     }
 }
